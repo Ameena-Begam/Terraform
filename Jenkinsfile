@@ -10,16 +10,23 @@ pipeline {
 
    agent  any
     stages {
-        stage('checkout') {
+        stage('Checkout') {
             steps {
-                 script{
-                        dir("Terraform")
-                        {
-                            git "https://github.com/Ameena-Begam/Terraform.git"
-                        }
-                    }
+                script {
+                    // Check out code using the configured Git installation
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: '*/main']],
+                        doGenerateSubmoduleConfigurations: false,
+                        extensions: [],
+                        submoduleCfg: [],
+                        userRemoteConfigs: [[url: 'https://github.com/Ameena-Begam/Terraform.git']],
+                        // Specify the Git installation name here
+                        gitTool: 'Default Git'
+                    ])
                 }
             }
+        }
 
         stage('Plan') {
             steps {
