@@ -13,6 +13,7 @@ pipeline {
                     checkout([$class: 'GitSCM', branches: [[name: gitBranch]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', noTags: false, reference: '', shallow: true, timeout: 10]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: gitCredentialsId, url: gitUrl]]])
                 }
         }
+    }       
 
         stage('Terraform Init') {
             steps {
