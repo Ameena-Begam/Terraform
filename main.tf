@@ -10,3 +10,4 @@ resource "aws_vpc" "test_vpc" {
   tags = {
     Name = "test_vpc"
   }
+}
