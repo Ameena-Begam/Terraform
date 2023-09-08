@@ -8,7 +8,7 @@ pipeline {
                 script {
                     def gitUrl = 'https://github.com/Ameena-Begam/Terraform.git'
                     def gitBranch = 'main'
-                    def gitCredentialsId = 'Git Credentials' // Optional, if using credentials
+                    def gitCredentialsId = 'Git-Credentials' // Optional, if using credentials
 
                     checkout([$class: 'GitSCM', branches: [[name: gitBranch]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', noTags: false, reference: '', shallow: true, timeout: 10]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: gitCredentialsId, url: gitUrl]]])
                 }
