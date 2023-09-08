@@ -1,61 +1,45 @@
 pipeline {
+    agent any
 
-    parameters {
-        booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generating plan?')
-    } 
-    environment {
-        AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
-        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-    }
-
-   agent  any
     stages {
         stage('Checkout') {
-            steps {
-                script {
-                    // Check out code using the configured Git installation
-                    checkout([
-                        $class: 'GitSCM',
-                        branches: [[name: '*/main']],
-                        doGenerateSubmoduleConfigurations: false,
-                        extensions: [],
-                        submoduleCfg: [],
-                        userRemoteConfigs: [[url: 'https://github.com/Ameena-Begam/Terraform.git']],
-                        // Specify the Git installation name here
-                        gitTool: 'Default Git'
-                    ])
-                }
-            }
-        }
-
-        stage('Plan') {
-            steps {
-                sh 'pwd;cd terraform/ ; terraform init'
-                sh "pwd;cd terraform/ ; terraform plan -out tfplan"
-                sh 'pwd;cd terraform/ ; terraform show -no-color tfplan > tfplan.txt'
-            }
-        }
-        stage('Approval') {
-           when {
-               not {
-                   equals expected: true, actual: params.autoApprove
-               }
-           }
-
            steps {
-               script {
-                    def plan = readFile 'terraform/tfplan.txt'
-                    input message: "Do you want to apply the plan?",
-                    parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
-               }
-           }
-       }
+                // Checkout your Git repository containing Terraform code
+                script {
+                    def gitUrl = 'https://github.com/yourusername/your-terraform-repo.git'
+                    def gitBranch = 'main'
+                    def gitCredentialsId = 'your-git-credentials-id' // Optional, if using credentials
 
-        stage('Apply') {
+                    checkout([$class: 'GitSCM', branches: [[name: gitBranch]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', noTags: false, reference: '', shallow: true, timeout: 10]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: gitCredentialsId, url: gitUrl]]])
+                }
+        }
+
+        stage('Terraform Init') {
             steps {
-                sh "pwd;cd terraform/ ; terraform apply -input=false tfplan"
+                // Initialize Terraform
+                sh 'terraform init'
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                // Generate Terraform plan
+                sh 'terraform plan -out=tfplan'
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                // Apply Terraform changes
+                sh 'terraform apply -auto-approve tfplan'
+            }
+        }
+
+        stage('Terraform Destroy') {
+            steps {
+                // Destroy resources if needed (optional)
+                sh 'terraform destroy -auto-approve'
             }
         }
     }
-
-  }
+}
