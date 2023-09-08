@@ -16,31 +16,32 @@ pipeline {
     }       
 
         stage('Terraform Init') {
-            steps {
-                // Initialize Terraform
-                sh 'terraform init'
-            }
-        }
+    steps {
+        // Initialize Terraform
+        bat 'terraform init'
+    }
+}
 
-        stage('Terraform Plan') {
-            steps {
-                // Generate Terraform plan
-                sh 'terraform plan -out=tfplan'
-            }
-        }
+stage('Terraform Plan') {
+    steps {
+        // Generate Terraform plan
+        bat 'terraform plan -out=tfplan'
+    }
+}
 
-        stage('Terraform Apply') {
-            steps {
-                // Apply Terraform changes
-                sh 'terraform apply -auto-approve tfplan'
-            }
-        }
+stage('Terraform Apply') {
+    steps {
+        // Apply Terraform changes
+        bat 'terraform apply -auto-approve tfplan'
+    }
+}
 
-        stage('Terraform Destroy') {
-            steps {
-                // Destroy resources if needed (optional)
-                sh 'terraform destroy -auto-approve'
-            }
-        }
+stage('Terraform Destroy') {
+    steps {
+        // Destroy resources if needed (optional)
+        bat 'terraform destroy -auto-approve'
+    }
+}
+
     }
 }
